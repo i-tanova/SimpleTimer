@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SimpleTimer</string>
+    <string name="press_anywhere">Press anywhere to start</string>
+    <string name="time_lbl">Time</string>
+</resources>
