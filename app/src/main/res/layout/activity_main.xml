@@ -6,22 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
+    xmlns:timer="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
-    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+    <io.github.krtkush.lineartimer.LinearTimerView
         android:id="@+id/timer_progress_bar"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        app:cpb_background_progressbar_color="@color/colorBlack"
-        app:cpb_background_progressbar_width="10dp"
-        app:cpb_progress_direction="to_right"
-        app:cpb_progressbar_color="@color/colorAccent"
-        app:cpb_progressbar_width="10dp"
-        app:cpb_round_border="false"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:progressColor="@color/colorAccent"
+        app:initialColor="@color/colorBlack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        timer:radius="40dp"
+        timer:strokeWidth="4dp"/>
 
     <TextView
         android:id="@+id/timer_time_lbl"

@@ -4,76 +4,77 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import io.reactivex.rxjava3.disposables.Disposable
+import io.github.krtkush.lineartimer.LinearTimer
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
-    private var isTimerFinished = true
-    private var isTimerPaused = false
-    var timePassed = 0f
     val timerDurationMs = 20000L
     val timer: Timer = TimerImpl()
+    var linearTimer: LinearTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         timer_background.setOnClickListener {
-            if (isTimerFinished) {
-                onTimerStarted()
-            } else {
-                if (!isTimerPaused) {
-                    onTimerPaused()
-                } else {
+            when (timer.getState()) {
+                TimerState.PAUSED -> {
                     onTimerRestarted()
+                }
+                TimerState.RESTARTED -> {
+                    onTimerPaused()
+                }
+                TimerState.START -> {
+                    onTimerPaused()
+                }
+                TimerState.NONE -> {
+                    onTimerStarted()
+                }
+                TimerState.STOPPED -> {
+                    onTimerStarted()
                 }
             }
         }
-//        timer_progress_bar.onProgressChangeListener = { progress ->
-//            if (progress >= 100f) {
-//                onTimerFinished()
-//            }
-//        }
+
+        timer.addOnTickListener = { onTick ->
+            if((onTick * 1000) >= timerDurationMs){
+                onTimerFinished()
+            }else {
+                timer_time_txt.text = "${(timerDurationMs - (onTick * 1000)) / 1000}"
+            }
+        }
     }
 
     private fun onTimerRestarted() {
         Log.d("Timer", "On timer restarted")
-        val progress = timer_progress_bar.progress
-//        timer_progress_bar.startAngle = progress
-//        timer_progress_bar.setProgressWithAnimation(timerDurationMs - timePassed, (timerDurationMs - timePassed).toInt()*1000L)
+
         timer_press_txt.visibility = View.GONE
-        isTimerPaused = false
         timer.onRestart()
+        linearTimer?.resumeTimer()
     }
 
     private fun onTimerPaused() {
         Log.d("Timer", "On timer paused")
-        isTimerPaused = true
-//        val progress = timer_progress_bar.progress
-//        timer_progress_bar.indeterminateMode = false
         timer_press_txt.visibility = View.VISIBLE
-
         timer.onPause()
+        linearTimer?.pauseTimer()
     }
 
     private fun onTimerFinished() {
         Log.d("Timer", "On timer finished")
-//        timer_progress_bar.progress = 0f
-//        timer_progress_bar.invalidate()
         timer_press_txt.visibility = View.VISIBLE
         timer.onStop()
-        isTimerFinished = true
     }
 
     private fun onTimerStarted() {
-        timePassed = 0f
-        isTimerFinished = false
+        linearTimer = LinearTimer.Builder()
+            .linearTimerView(timer_progress_bar)
+            .duration(timerDurationMs)
+            .build()
+        linearTimer?.startTimer()
 
-//        timer_progress_bar.progressMax = timerDurationMs
-//        timer_progress_bar.setProgressWithAnimation(timerDurationMs, timerDurationMs.toInt()*1000L)
-//
         timer_press_txt.visibility = View.GONE
-
         timer.onStart(timerDurationMs)
     }
 }
